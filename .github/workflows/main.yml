@@ -1,0 +1,48 @@
+on:
+#  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 15 * * *' # gmt+3 17:00
+
+
+jobs:
+  update-meta:
+    runs-on: ubuntu-latest
+    
+    
+    steps:
+      - name: Checkout repos
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_META }}
+      
+      - uses: actions/checkout@v3
+        with:
+          path: pmeta
+          repository: PolyethyleneMC/meta
+          token: ${{ secrets.PAT_META }}
+      
+      - uses: actions/checkout@v3
+        with:
+          path: meta-upstream
+          repository: PolyethyleneMC/meta-upstream
+          token: ${{ secrets.PAT_META }}
+          
+          
+      - name: Install dependencies
+        run: |
+         pip install cachecontrol requests lockfile pydantic
+         sudo apt-get update
+         sudo apt-get install -y rsync cron
+          
+      - name: Generate meta
+        run: |
+          ./update.sh
+          
+        
+          
+        
+      
+      
+      
+  
